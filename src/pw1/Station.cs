@@ -8,6 +8,7 @@ namespace TrainStationSimulation
         // Lists asked in the PW
         private List<Platform> platforms;
         private List<Train> trains;
+        private int tickCounter = 0; // Counter for simulation ticks
 
         // Constructor
         public Station(int numberOfPlatforms)
@@ -30,6 +31,7 @@ namespace TrainStationSimulation
         // Display current status of trains and platforms
         public void DisplayStatus()
         {
+
             Console.WriteLine("\n--- TRAINS ---");
             foreach (Train train in trains)
             {
@@ -48,35 +50,21 @@ namespace TrainStationSimulation
         // Advances time by 15 minutes per tick
         public void AdvanceTick()
         {
-            Console.WriteLine("\nAdvancing simulation by 15 minutes...");
+            tickCounter++;
+            Console.WriteLine($"\n|------ TICK {tickCounter} ({tickCounter * 15} min) ------|");
+            Console.WriteLine("Advancing simulation by 15 minutes...");
 
+            // Step 1: Decrease arrival time for EnRoute trains
             foreach (Train train in trains)
             {
                 if (train.GetStatus() == TrainStatus.EnRoute)
                 {
                     int updatedTime = train.GetArrivalTime() - 15;
                     train.SetArrivalTime(updatedTime);
-
-                    if (updatedTime <= 0)
-                    {
-                        Platform freePlatform = FindFreePlatform();
-
-                        if (freePlatform != null)
-                        {
-                            train.SetStatus(TrainStatus.Docking);
-                            freePlatform.SetStatus(PlatformStatus.Occupied);
-                            freePlatform.SetCurrentTrain(train);
-                            freePlatform.SetDockingTimeRemaining(2);
-                        }
-                        else
-                        {
-                            train.SetStatus(TrainStatus.Waiting);
-                        }
-                    }
                 }
             }
 
-            // Handle docking timers
+            // Step 2: Process docking timers and free platforms if docking ends
             foreach (Platform platform in platforms)
             {
                 if (platform.GetStatus() == PlatformStatus.Occupied)
@@ -89,6 +77,51 @@ namespace TrainStationSimulation
                         platform.GetCurrentTrain().SetStatus(TrainStatus.Docked);
                         platform.SetStatus(PlatformStatus.Free);
                         platform.SetCurrentTrain(null);
+                    }
+                }
+            }
+
+            // Step 3: While there are waiting trains and free platforms, assign them
+            bool assigned;
+            do
+            {
+                assigned = false;
+                foreach (Train waitingTrain in trains)
+                {
+                    if (waitingTrain.GetStatus() == TrainStatus.Waiting)
+                    {
+                        Platform freePlatform = FindFreePlatform();
+                        if (freePlatform != null)
+                        {
+                            waitingTrain.SetStatus(TrainStatus.Docking);
+                            freePlatform.SetStatus(PlatformStatus.Occupied);
+                            freePlatform.SetCurrentTrain(waitingTrain);
+                            freePlatform.SetDockingTimeRemaining(2);
+                            assigned = true;
+                        }
+                    }
+                }
+            } while (assigned); // Keep assigning while there are Waiting trains and free platforms
+
+            // Step 4: Now consider EnRoute trains that have just arrived
+            foreach (Train train in trains)
+            {
+                if (train.GetStatus() == TrainStatus.EnRoute && train.GetArrivalTime() <= 0)
+                {
+                    Platform freePlatform = FindFreePlatform();
+
+                    // ONLY allow if no one is waiting
+                    bool hasWaiting = trains.Exists(t => t.GetStatus() == TrainStatus.Waiting);
+                    if (freePlatform != null && !hasWaiting)
+                    {
+                        train.SetStatus(TrainStatus.Docking);
+                        freePlatform.SetStatus(PlatformStatus.Occupied);
+                        freePlatform.SetCurrentTrain(train);
+                        freePlatform.SetDockingTimeRemaining(2);
+                    }
+                    else if (hasWaiting)
+                    {
+                        train.SetStatus(TrainStatus.Waiting);
                     }
                 }
             }
@@ -118,6 +151,11 @@ namespace TrainStationSimulation
                 }
             }
             return null;
+        }
+
+        public int GetTickCount()
+        {
+            return tickCounter;
         }
     }
 }
