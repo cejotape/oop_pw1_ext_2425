@@ -49,5 +49,8 @@ namespace TrainStationSimulation
         {
             return this.type;
         }
+
+        // Abstract method to be implemented by derived classes to provide specific information about the train.
+        public abstract string GetInfo();
     }
 }
