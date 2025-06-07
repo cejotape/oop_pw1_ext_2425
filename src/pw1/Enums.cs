@@ -2,10 +2,13 @@
 
 namespace TrainStationSimulation
 {
+    // Enum for train
     public enum TrainStatus
     {
         EnRoute, Waiting, Docking, Docked
     }
+    
+    // Enum for platform status
     public enum PlatformStatus
     {
         Free, Occupied
