@@ -11,8 +11,33 @@ namespace TrainStationSimulation
             Console.WriteLine("Welcome to the Train Station Simulator!");
 
             // Ask user for number of platforms
-            Console.Write("Enter number of platforms to create: ");
-            int platformCount = int.Parse(Console.ReadLine());
+            int platformCount = 0;
+            bool validInput = false;
+
+            while (!validInput)
+            {
+                Console.Write("Enter number of platforms to create: ");
+                string input = Console.ReadLine();
+
+                try
+                {
+                    platformCount = int.Parse(input);
+
+                    if (platformCount <= 0)
+                    {
+                        Console.WriteLine("Please enter a number greater than 0.");
+                    }
+                    else
+                    {
+                        validInput = true;
+                    }
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid integer.");
+                }
+            }
+
 
             // Create station
             Station station = new Station(platformCount);
