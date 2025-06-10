@@ -19,7 +19,6 @@ This repository is the base element for the development of Practice 1 for the ex
 **Group Member**: Carlos Jiménez Pelegrín
 
 This document presents the detailed design for the Train Station Simulation project developed in C# using .NET Core 8. The goal of the project is to simulate the arrival and management of trains at a station with limited platform availability, which the user chooses the number, while I use the OOP principal fundamentals learnt in class.
-The aim of this Practical Work is to design a system where a number of trains arrive over time, and there is a limited number of platforms that manage their docking status
 
 ## Description of the Solution
 
@@ -118,6 +117,15 @@ The system simulates a series of trains arriving over time, being docked to plat
 | - FindFreePlatform(): Platform                   |
 +--------------------------------------------------+
 
+- **Program**
++--------------------------------------------------+
+|                    Program                       |
++--------------------------------------------------+
+| + static Main(): void                            |
+| + static LoadFilesFromFile(): void               |
+| + static RunSimulation(): void                   |
++--------------------------------------------------+
+
 - **Train Status**
 Enum TrainStatus {EnRoute, Waiting, Docking, Docked}
 
@@ -128,10 +136,23 @@ Enum PlatformStatus {Free, Occupied}
 
 - **Tick Synchronization**: It was difficult to manage when and how docking timers are reduced in sync with other updates.
 - **Fairness Logic**: Initially, newly arrived trains could take free platforms while other trains were waiting. I have solved this with a prioritized platform assignment loop.
-- **Input File Validation**: The system needed robust parsing logic to handle both `passenger` and `freight` trains in a common CSV format.
+- **Input File Validation**: The system needed to have a specific ubication for the CSV file, to handle both `passenger` and `freight` trains in a common CSV.
 - **Null Handling**: Avoiding platform `null` errors required careful checks before accessing the train assigned to a platform.
-- **Abiding by OOP Guidelines**: It was important to align the structure with examples and constraints given in lectures, such as placing enums outside classes and using explicit getters setters.
-- **Basing the project on the corrections from PW1**: I have checked the rubric and the marks from PW1 and I have tried to correct the mistakes and to follow the instructions
+- **Abiding by OOP Guidelines**: It was important to align the structure with examples and constraints given in lectures and in the corrections of the PW1, such as placing enums outside classes and using explicit getters setters.
+- **Basing the project on the corrections from PW1**: I have checked the rubric and the marks from PW1 and I have tried to correct the mistakes and to follow the instructions.
+
+## Conclusions
+
+This simulation has helped me to reinforce key OOP concepts, such as encapsulation, abstraction, inheritance, and polymorphism. Building a simulation from scratch also encouraged careful system design and attention to fairness in resource allocation, moreover it has remembered me how to structure this type of programs.
+I hope that with what I have done here and with the work I am giving to this appart from this PW, I will be able to program not perfect but yes in a better way than I was.
+
+I have learnt:
+
+- How to properly manage object states and transitions over time.
+- The importance of designing clean, reusable class hierarchies.
+- The value of prioritizing fairness in concurrent systems, as I mentioned before, there was a problem with the order of the trains.
+- How to handle file input, parsing, and error checking, it has helped me to review the exception handling.
+
 
 
 
